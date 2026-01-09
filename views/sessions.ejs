@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Scalekit Auth</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        body { min-height: 100vh; display: flex; flex-direction: column; }
+        .navbar-brand { font-weight: 600; }
+        .main-content { flex: 1; padding-top: 2rem; padding-bottom: 2rem; }
+        footer { margin-top: auto; padding: 1.5rem 0; background-color: #f8f9fa; }
+        .info-card { border-left: 4px solid #667eea; }
+        .session-id {
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            word-break: break-all;
+            background-color: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/"><i class="bi bi-shield-lock"></i> Scalekit Auth</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/sessions"><i class="bi bi-clock-history"></i> Sessions</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> <%= user.name || user.email %>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><span class="dropdown-item-text"><small class="text-muted"><%= user.email %></small></span></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="row mb-4">
+                <div class="col">
+                    <h1 class="display-5 fw-bold">
+                        <i class="bi bi-clock-history"></i> Session Management
+                    </h1>
+                    <p class="text-muted">View and manage your active session</p>
+                </div>
+            </div>
+
+            <!-- Current Session Card -->
+            <div class="row g-4 mb-4">
+                <div class="col-12">
+                    <div class="card info-card">
+                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-activity"></i> Current Session
+                            </h5>
+                            <span class="badge bg-success">Active</span>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row mb-0">
+                                <dt class="col-sm-3">Session ID:</dt>
+                                <dd class="col-sm-9">
+                                    <div class="session-id"><%= session.id %></div>
+                                </dd>
+
+                                <dt class="col-sm-3">User:</dt>
+                                <dd class="col-sm-9"><%= session.user.name || session.user.email %></dd>
+
+                                <dt class="col-sm-3">Email:</dt>
+                                <dd class="col-sm-9"><%= session.user.email %></dd>
+
+                                <dt class="col-sm-3">Expires:</dt>
+                                <dd class="col-sm-9">
+                                    <%= session.expires %>
+                                    <% 
+                                        const now = new Date();
+                                        const expires = new Date(session.expires);
+                                        const minutesRemaining = Math.floor((expires - now) / 1000 / 60);
+                                    %>
+                                    <span class="badge <%= minutesRemaining < 60 ? 'bg-warning' : 'bg-info' %>">
+                                        <i class="bi bi-clock"></i> <%= minutesRemaining %> minutes remaining
+                                    </span>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Token Status Card -->
+            <div class="row g-4 mb-4">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header bg-white">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-key"></i> Token Status
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Access Token
+                                    <% if (session.tokens.access_token_present) { %>
+                                        <span class="badge bg-success rounded-pill">Present</span>
+                                    <% } else { %>
+                                        <span class="badge bg-danger rounded-pill">Missing</span>
+                                    <% } %>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Refresh Token
+                                    <% if (session.tokens.refresh_token_present) { %>
+                                        <span class="badge bg-success rounded-pill">Present</span>
+                                    <% } else { %>
+                                        <span class="badge bg-danger rounded-pill">Missing</span>
+                                    <% } %>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    ID Token
+                                    <% if (session.tokens.id_token_present) { %>
+                                        <span class="badge bg-success rounded-pill">Present</span>
+                                    <% } else { %>
+                                        <span class="badge bg-danger rounded-pill">Missing</span>
+                                    <% } %>
+                                </li>
+                            </ul>
+                            <% if (session.tokens.expires_at) { %>
+                                <div class="mt-3">
+                                    <small class="text-muted">
+                                        <i class="bi bi-info-circle"></i>
+                                        Access token expires at: <%= session.tokens.expires_at %>
+                                    </small>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Info Card -->
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header bg-white">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-person"></i> User Information
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row mb-0">
+                                <dt class="col-sm-4">User ID:</dt>
+                                <dd class="col-sm-8"><code><%= session.user.id %></code></dd>
+
+                                <dt class="col-sm-4">Roles:</dt>
+                                <dd class="col-sm-8">
+                                    <% if (session.user.roles && session.user.roles.length > 0) { %>
+                                        <% session.user.roles.forEach(role => { %>
+                                            <span class="badge bg-primary me-1"><%= role %></span>
+                                        <% }); %>
+                                    <% } else { %>
+                                        <span class="text-muted">None</span>
+                                    <% } %>
+                                </dd>
+
+                                <dt class="col-sm-4">Permissions:</dt>
+                                <dd class="col-sm-8">
+                                    <% if (session.user.permissions && session.user.permissions.length > 0) { %>
+                                        <% session.user.permissions.forEach(permission => { %>
+                                            <span class="badge bg-success me-1"><%= permission %></span>
+                                        <% }); %>
+                                    <% } else { %>
+                                        <span class="text-muted">None</span>
+                                    <% } %>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions Card -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-white">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-gear"></i> Session Actions
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted mb-3">
+                                Manage your current session. Note that clearing the session will only remove local session data, while logout will also end your session with Scalekit.
+                            </p>
+                            <div class="d-grid gap-2 d-md-flex">
+                                <a href="/dashboard" class="btn btn-outline-primary">
+                                    <i class="bi bi-speedometer2"></i> Back to Dashboard
+                                </a>
+                                <form method="POST" action="/sessions/clear" class="d-inline" onsubmit="return confirm('Are you sure you want to clear this session?');">
+                                    <button type="submit" class="btn btn-outline-warning">
+                                        <i class="bi bi-trash"></i> Clear Session
+                                    </button>
+                                </form>
+                                <a href="/logout" class="btn btn-outline-danger ms-md-auto">
+                                    <i class="bi bi-box-arrow-right"></i> Logout
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="text-center text-muted">
+        <div class="container">
+            <p class="mb-0"><small>Powered by <a href="https://scalekit.com" target="_blank" class="text-decoration-none">Scalekit</a> | <a href="https://docs.scalekit.com" target="_blank" class="text-decoration-none">Documentation</a></small></p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

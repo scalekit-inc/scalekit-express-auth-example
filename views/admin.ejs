@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Scalekit Auth</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        body { min-height: 100vh; display: flex; flex-direction: column; }
+        .navbar-brand { font-weight: 600; }
+        .main-content { flex: 1; padding-top: 2rem; padding-bottom: 2rem; }
+        footer { margin-top: auto; padding: 1.5rem 0; background-color: #f8f9fa; }
+        .admin-card { border-left: 4px solid #dc3545; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/"><i class="bi bi-shield-lock"></i> Scalekit Auth</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/sessions"><i class="bi bi-clock-history"></i> Sessions</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> <%= user.name || user.email %>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><span class="dropdown-item-text"><small class="text-muted"><%= user.email %></small></span></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="row mb-4">
+                <div class="col">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Admin</li>
+                        </ol>
+                    </nav>
+                    <h1 class="display-5 fw-bold">
+                        <i class="bi bi-gear"></i> Admin Dashboard
+                    </h1>
+                    <p class="text-muted">Manage system settings and configurations</p>
+                </div>
+            </div>
+
+            <div class="alert alert-info" role="alert">
+                <i class="bi bi-info-circle"></i>
+                <strong>Permission Required:</strong> You have the <code>admin</code> permission which grants you access to this page.
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="card admin-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-people"></i> User Management
+                            </h5>
+                            <p class="card-text text-muted">
+                                View, create, and manage user accounts and permissions.
+                            </p>
+                            <button class="btn btn-sm btn-outline-danger" disabled>
+                                Manage Users
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card admin-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-shield-check"></i> Roles & Permissions
+                            </h5>
+                            <p class="card-text text-muted">
+                                Configure roles and assign permissions to users.
+                            </p>
+                            <button class="btn btn-sm btn-outline-danger" disabled>
+                                Manage Roles
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card admin-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-graph-up"></i> Analytics
+                            </h5>
+                            <p class="card-text text-muted">
+                                View system analytics and usage statistics.
+                            </p>
+                            <button class="btn btn-sm btn-outline-danger" disabled>
+                                View Analytics
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card admin-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-gear-fill"></i> System Settings
+                            </h5>
+                            <p class="card-text text-muted">
+                                Configure system-wide settings and preferences.
+                            </p>
+                            <button class="btn btn-sm btn-outline-danger" disabled>
+                                Configure System
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card admin-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-file-earmark-text"></i> Audit Logs
+                            </h5>
+                            <p class="card-text text-muted">
+                                Review audit logs and security events.
+                            </p>
+                            <button class="btn btn-sm btn-outline-danger" disabled>
+                                View Logs
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card admin-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-hdd"></i> Backup & Restore
+                            </h5>
+                            <p class="card-text text-muted">
+                                Manage system backups and restore points.
+                            </p>
+                            <button class="btn btn-sm btn-outline-danger" disabled>
+                                Manage Backups
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-warning mt-4" role="alert">
+                <i class="bi bi-exclamation-triangle"></i>
+                <strong>Demo Mode:</strong> These admin features are disabled in this demo application. In a production environment, these would be fully functional administrative tools.
+            </div>
+
+            <div class="mt-4">
+                <a href="/dashboard" class="btn btn-outline-primary">
+                    <i class="bi bi-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="text-center text-muted">
+        <div class="container">
+            <p class="mb-0"><small>Powered by <a href="https://scalekit.com" target="_blank" class="text-decoration-none">Scalekit</a> | <a href="https://docs.scalekit.com" target="_blank" class="text-decoration-none">Documentation</a></small></p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Scalekit Auth</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        body { min-height: 100vh; display: flex; flex-direction: column; }
+        .navbar-brand { font-weight: 600; }
+        .main-content { flex: 1; padding-top: 2rem; padding-bottom: 2rem; }
+        footer { margin-top: auto; padding: 1.5rem 0; background-color: #f8f9fa; }
+        .token-display {
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            word-break: break-all;
+            background-color: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+        .badge-permission {
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .info-card {
+            border-left: 4px solid #667eea;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/"><i class="bi bi-shield-lock"></i> Scalekit Auth</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link active" href="/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/sessions"><i class="bi bi-clock-history"></i> Sessions</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> <%= user.name || user.email %>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><span class="dropdown-item-text"><small class="text-muted"><%= user.email %></small></span></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="row mb-4">
+                <div class="col">
+                    <h1 class="display-5 fw-bold">
+                        <i class="bi bi-speedometer2"></i> Dashboard
+                    </h1>
+                    <p class="text-muted">Welcome back, <%= user.name || user.email %>!</p>
+                </div>
+            </div>
+
+            <!-- User Profile Card -->
+            <div class="row g-4 mb-4">
+                <div class="col-lg-6">
+                    <div class="card info-card">
+                        <div class="card-header bg-white">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-person-badge"></i> User Profile
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row mb-0">
+                                <dt class="col-sm-4">User ID:</dt>
+                                <dd class="col-sm-8"><code> <%= user.id %></code></dd>
+
+                                <dt class="col-sm-4">Given Name:</dt>
+                                <dd class="col-sm-8"><%= user.given_name || 'N/A' %></dd>
+
+                                <dt class="col-sm-4">Family Name:</dt>
+                                <dd class="col-sm-8"><%= user.family_name || 'N/A' %></dd>
+
+                                <dt class="col-sm-4">Email:</dt>
+                                <dd class="col-sm-8">
+                                    <%= user.email %>
+                                    <% if (user.email_verified) { %>
+                                        <span class="badge bg-success badge-permission">Verified</span>
+                                    <% } %>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Roles & Permissions Card -->
+                <div class="col-lg-6">
+                    <div class="card info-card">
+                        <div class="card-header bg-white">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-shield-check"></i> Roles & Permissions
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <strong>Roles:</strong><br>
+                                <% if (user.roles && user.roles.length > 0) { %>
+                                    <% user.roles.forEach(role => { %>
+                                        <span class="badge bg-primary badge-permission me-1 mt-1"><%= role %></span>
+                                    <% }); %>
+                                <% } else { %>
+                                    <span class="text-muted">No roles assigned</span>
+                                <% } %>
+                            </div>
+                            <div>
+                                <strong>Permissions:</strong><br>
+                                <% if (user.permissions && user.permissions.length > 0) { %>
+                                    <% user.permissions.forEach(permission => { %>
+                                        <span class="badge bg-success badge-permission me-1 mt-1"><%= permission %></span>
+                                    <% }); %>
+                                <% } else { %>
+                                    <span class="text-muted">No permissions assigned</span>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Token Information Card -->
+            <div class="row g-4 mb-4">
+                <div class="col-12">
+                    <div class="card info-card">
+                        <div class="card-header bg-white">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-key"></i> Token Information
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <strong>Access Token:</strong>
+                                <div class="token-display"><%= tokens.access_token.substring(0, 50) %>...</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <strong>Refresh Token:</strong>
+                                <div class="token-display">
+                                    <% if (tokens.refresh_token) { %>
+                                        <%= tokens.refresh_token.substring(0, 10) %>...
+                                    <% } else { %>
+                                        Not available
+                                    <% } %>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <strong>ID Token:</strong>
+                                <div class="token-display">
+                                    <% if (tokens.id_token) { %>
+                                        <%= tokens.id_token.substring(0, 10) %>...
+                                    <% } else { %>
+                                        Not available
+                                    <% } %>
+                                </div>
+                            </div>
+
+                            <div>
+                                <strong>Expires At:</strong><br>
+                                <% if (tokens.expires_at) { %>
+                                    <%= new Date(tokens.expires_at * 1000).toLocaleString() %>
+                                    <span class="badge bg-info badge-permission">
+                                        <i class="bi bi-clock"></i>
+                                        <%= Math.max(0, Math.floor((tokens.expires_at - Date.now() / 1000) / 60)) %> minutes remaining
+                                    </span>
+                                <% } else { %>
+                                    <span class="text-muted">Not available</span>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Permission Testing Widget -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card border-warning">
+                        <div class="card-header bg-warning bg-opacity-10">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-shield-check"></i> Permission Testing Widget
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted mb-3">
+                                Test your permissions by clicking the buttons below. Each button tests a specific permission or role requirement.
+                            </p>
+
+                            <div class="row g-3">
+                                <!-- Test Admin Role -->
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <h6 class="card-title">
+                                                <i class="bi bi-person-badge"></i> Admin Role Test
+                                            </h6>
+                                            <p class="text-muted small mb-2">
+                                                Required: <code>admin</code> role
+                                            </p>
+                                            <p class="small mb-3">
+                                                <strong>Your Status:</strong>
+                                                <% if (user.roles && user.roles.includes('admin')) { %>
+                                                    <span class="badge bg-success">Has Role</span>
+                                                <% } else { %>
+                                                    <span class="badge bg-danger">Missing Role</span>
+                                                <% } %>
+                                            </p>
+                                            <button onclick="testEndpoint('/api/admin/users')" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-play-circle"></i> Test API
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Test Admin Permission -->
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <h6 class="card-title">
+                                                <i class="bi bi-gear"></i> Admin Permission Test
+                                            </h6>
+                                            <p class="text-muted small mb-2">
+                                                Required: <code>admin</code> permission
+                                            </p>
+                                            <p class="small mb-3">
+                                                <strong>Your Status:</strong>
+                                                <% if (user.permissions && user.permissions.includes('admin')) { %>
+                                                    <span class="badge bg-success">Has Permission</span>
+                                                <% } else { %>
+                                                    <span class="badge bg-danger">Missing Permission</span>
+                                                <% } %>
+                                            </p>
+                                            <a href="/dashboard/admin" class="btn btn-sm btn-outline-success">
+                                                <i class="bi bi-box-arrow-up-right"></i> Visit Admin Panel
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Test Projects Create Permission -->
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <h6 class="card-title">
+                                                <i class="bi bi-folder-plus"></i> Create Project Test
+                                            </h6>
+                                            <p class="text-muted small mb-2">
+                                                Required: <code>projects:create</code> permission
+                                            </p>
+                                            <p class="small mb-3">
+                                                <strong>Your Status:</strong>
+                                                <% if (user.permissions && user.permissions.includes('projects:create')) { %>
+                                                    <span class="badge bg-success">Has Permission</span>
+                                                <% } else { %>
+                                                    <span class="badge bg-danger">Missing Permission</span>
+                                                <% } %>
+                                            </p>
+                                            <button onclick="testEndpoint('/api/projects/create', 'POST')" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-play-circle"></i> Test API
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Test Settings Write Permission -->
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <h6 class="card-title">
+                                                <i class="bi bi-sliders"></i> Settings Write Test
+                                            </h6>
+                                            <p class="text-muted small mb-2">
+                                                Required: <code>settings:write</code> permission
+                                            </p>
+                                            <p class="small mb-3">
+                                                <strong>Your Status:</strong>
+                                                <% if (user.permissions && user.permissions.includes('settings:write')) { %>
+                                                    <span class="badge bg-success">Has Permission</span>
+                                                <% } else { %>
+                                                    <span class="badge bg-danger">Missing Permission</span>
+                                                <% } %>
+                                            </p>
+                                            <a href="/dashboard/settings" class="btn btn-sm btn-outline-info">
+                                                <i class="bi bi-box-arrow-up-right"></i> Visit Settings
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Test Results Area -->
+                            <div id="testResults" class="mt-3" style="display: none;">
+                                <hr>
+                                <h6>Test Result:</h6>
+                                <div id="testResultContent" class="alert" role="alert"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-white">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-lightning"></i> Quick Actions
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2 d-md-flex">
+                                <a href="/sessions" class="btn btn-outline-primary">
+                                    <i class="bi bi-clock-history"></i> View Sessions
+                                </a>
+                                <% if (user.permissions && user.permissions.includes('admin')) { %>
+                                    <a href="/dashboard/admin" class="btn btn-outline-success">
+                                        <i class="bi bi-gear"></i> Admin Panel
+                                    </a>
+                                <% } %>
+                                <% if (user.permissions && user.permissions.includes('settings:write')) { %>
+                                    <a href="/dashboard/settings" class="btn btn-outline-info">
+                                        <i class="bi bi-sliders"></i> Settings
+                                    </a>
+                                <% } %>
+                                <a href="/logout" class="btn btn-outline-danger ms-md-auto">
+                                    <i class="bi bi-box-arrow-right"></i> Logout
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="text-center text-muted">
+        <div class="container">
+            <p class="mb-0"><small>Powered by <a href="https://scalekit.com" target="_blank" class="text-decoration-none">Scalekit</a> | <a href="https://docs.scalekit.com" target="_blank" class="text-decoration-none">Documentation</a></small></p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        async function testEndpoint(url, method = 'GET') {
+            const resultsDiv = document.getElementById('testResults');
+            const resultContent = document.getElementById('testResultContent');
+
+            // Show loading state
+            resultsDiv.style.display = 'block';
+            resultContent.className = 'alert alert-info';
+            resultContent.innerHTML = '<i class="bi bi-hourglass-split"></i> Testing endpoint...';
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'same-origin'
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Success
+                    resultContent.className = 'alert alert-success';
+                    resultContent.innerHTML = `
+                        <h6 class="alert-heading"><i class="bi bi-check-circle-fill"></i> Success!</h6>
+                        <p><strong>Status:</strong> ${response.status} ${response.statusText}</p>
+                        <hr>
+                        <p class="mb-0"><strong>Response:</strong></p>
+                        <pre class="mb-0"><code>${JSON.stringify(data, null, 2)}</code></pre>
+                    `;
+                } else {
+                    // Error from server
+                    resultContent.className = 'alert alert-danger';
+                    resultContent.innerHTML = `
+                        <h6 class="alert-heading"><i class="bi bi-x-circle-fill"></i> Access Denied</h6>
+                        <p><strong>Status:</strong> ${response.status} ${response.statusText}</p>
+                        <hr>
+                        <p class="mb-0"><strong>Response:</strong></p>
+                        <pre class="mb-0"><code>${JSON.stringify(data, null, 2)}</code></pre>
+                    `;
+                }
+            } catch (error) {
+                // Network or other error
+                resultContent.className = 'alert alert-danger';
+                resultContent.innerHTML = `
+                    <h6 class="alert-heading"><i class="bi bi-exclamation-triangle-fill"></i> Error</h6>
+                    <p class="mb-0">${error.message}</p>
+                `;
+            }
+
+            // Scroll to results
+            resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    </script>
+</body>
+</html>

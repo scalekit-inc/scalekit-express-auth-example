@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Scalekit Auth</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        body { min-height: 100vh; display: flex; flex-direction: column; }
+        .navbar-brand { font-weight: 600; }
+        .main-content { flex: 1; padding-top: 2rem; padding-bottom: 2rem; }
+        .hero-section { padding: 4rem 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .feature-icon { font-size: 2.5rem; color: #667eea; }
+        footer { margin-top: auto; padding: 1.5rem 0; background-color: #f8f9fa; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/"><i class="bi bi-shield-lock"></i> Scalekit Auth</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <% if (user) { %>
+                        <li class="nav-item"><a class="nav-link" href="/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/sessions"><i class="bi bi-clock-history"></i> Sessions</a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle"></i> <%= user.name || user.email %>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><span class="dropdown-item-text"><small class="text-muted"><%= user.email %></small></span></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                            </ul>
+                        </li>
+                    <% } else { %>
+                        <li class="nav-item"><a class="nav-link" href="/auth/login"><i class="bi bi-box-arrow-in-right"></i> Login</a></li>
+                    <% } %>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="hero-section text-center">
+            <div class="container">
+                <h1 class="display-4 fw-bold mb-4">
+                    <i class="bi bi-shield-check"></i> Enterprise Authentication
+                </h1>
+                <p class="lead mb-4">
+                    Secure your application with Scalekit's enterprise-grade authentication
+                </p>
+                <% if (!user) { %>
+                    <a href="/auth/login" class="btn btn-light btn-lg">
+                        <i class="bi bi-box-arrow-in-right"></i> Sign In with Scalekit
+                    </a>
+                <% } else { %>
+                    <a href="/dashboard" class="btn btn-light btn-lg">
+                        <i class="bi bi-speedometer2"></i> Go to Dashboard
+                    </a>
+                <% } %>
+            </div>
+        </div>
+
+        <div class="container my-5">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="bi bi-key feature-icon d-block mb-3"></i>
+                            <h5 class="card-title">OAuth 2.0 / OIDC</h5>
+                            <p class="card-text text-muted">
+                                Industry-standard authentication protocols with full OAuth 2.0 and OpenID Connect support
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="bi bi-people feature-icon d-block mb-3"></i>
+                            <h5 class="card-title">SSO & Social Logins</h5>
+                            <p class="card-text text-muted">
+                                Support for enterprise SSO, social logins, magic links, and passkeys
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="bi bi-shield-lock feature-icon d-block mb-3"></i>
+                            <h5 class="card-title">Roles & Permissions</h5>
+                            <p class="card-text text-muted">
+                                Fine-grained access control with role-based and permission-based authorization
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-5">
+                <div class="col-lg-8 mx-auto">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <h3 class="card-title mb-4"><i class="bi bi-info-circle"></i> Features</h3>
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> OAuth 2.0 / OIDC login flow</li>
+                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Social logins, magic links, and passkeys</li>
+                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Automatic token refresh</li>
+                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Session management</li>
+                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Role-based and permission-based access control</li>
+                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Protected routes with middleware</li>
+                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Secure logout</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="text-center text-muted">
+        <div class="container">
+            <p class="mb-0"><small>Powered by <a href="https://scalekit.com" target="_blank" class="text-decoration-none">Scalekit</a> | <a href="https://docs.scalekit.com" target="_blank" class="text-decoration-none">Documentation</a></small></p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
